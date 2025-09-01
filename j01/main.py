@@ -50,6 +50,48 @@ class BoyerMoore():
         return -1
 
 
+class KnuthMorrisPratt():
+
+    def __init__(self, pattern: str) -> None:
+        self.pattern: str = pattern
+        self.lps = [0] * len(pattern)
+        l = 0
+        i = 1
+        while i < len(pattern):
+            if pattern[i] == pattern[l]:
+                l += 1
+                self.lps[i] = l
+                i += 1
+            else:
+                if l != 0:
+                    l = self.lps[l - 1]
+                else:
+                    self.lps[i] = 0
+                    i += 1
+
+    def search(self, text: str) -> int:
+        m = len(self.pattern)
+        n = len(text)
+
+        if m == 0:
+            return 0
+
+        if m > n:
+            return -1
+   
+        i = j = 0
+
+        while i < n:
+            if j < m and self.pattern[j] == text[i]:
+                i += 1
+                j += 1
+            elif j != 0:
+                j = self.lps[j - 1]
+            else:
+                i += 1
+            if j == m:
+                return i - j
+        return -1       
 
         
 
@@ -72,20 +114,20 @@ def main():
 
 
 
-    bmoor = BoyerMoore("abc")
-    print(f"text: '{text1}', pattern: '{bmoor.pattern}', index: {bmoor.search(text1)}")
-    print(f"text: '{text2}', pattern: '{bmoor.pattern}', index: {bmoor.search(text2)}")
-    print(f"text: '{text3}', pattern: '{bmoor.pattern}', index: {bmoor.search(text3)}")
-    print(f"text: '{text4}', pattern: '{bmoor.pattern}', index: {bmoor.search(text4)}")
-    print(f"text: '{text5}', pattern: '{bmoor.pattern}', index: {bmoor.search(text5)}")
+    # bmoor = BoyerMoore("abc")
+    # print(f"text: '{text1}', pattern: '{bmoor.pattern}', index: {bmoor.search(text1)}")
+    # print(f"text: '{text2}', pattern: '{bmoor.pattern}', index: {bmoor.search(text2)}")
+    # print(f"text: '{text3}', pattern: '{bmoor.pattern}', index: {bmoor.search(text3)}")
+    # print(f"text: '{text4}', pattern: '{bmoor.pattern}', index: {bmoor.search(text4)}")
+    # print(f"text: '{text5}', pattern: '{bmoor.pattern}', index: {bmoor.search(text5)}")
 
-    bmoor = BoyerMoore("вг")
-    print(f"text: '{text1}', pattern: '{bmoor.pattern}', index: {bmoor.search(text1)}")
-    print(f"text: '{text2}', pattern: '{bmoor.pattern}', index: {bmoor.search(text2)}")
-    print(f"text: '{text3}', pattern: '{bmoor.pattern}', index: {bmoor.search(text3)}")
-    print(f"text: '{text4}', pattern: '{bmoor.pattern}', index: {bmoor.search(text4)}")
-    print(f"text: '{text5}', pattern: '{bmoor.pattern}', index: {bmoor.search(text5)}")
-    print(f"text: 'art1', pattern: '{bmoor.pattern}', index: {bmoor.search(art1)}")
+    # bmoor = BoyerMoore("вг")
+    # print(f"text: '{text1}', pattern: '{bmoor.pattern}', index: {bmoor.search(text1)}")
+    # print(f"text: '{text2}', pattern: '{bmoor.pattern}', index: {bmoor.search(text2)}")
+    # print(f"text: '{text3}', pattern: '{bmoor.pattern}', index: {bmoor.search(text3)}")
+    # print(f"text: '{text4}', pattern: '{bmoor.pattern}', index: {bmoor.search(text4)}")
+    # print(f"text: '{text5}', pattern: '{bmoor.pattern}', index: {bmoor.search(text5)}")
+    # print(f"text: 'art1', pattern: '{bmoor.pattern}', index: {bmoor.search(art1)}")
 
     bmoor = BoyerMoore("")
     print(f"text: '{text1}', pattern: '{bmoor.pattern}', index: {bmoor.search(text1)}")
@@ -94,15 +136,41 @@ def main():
     bmoor = BoyerMoore("Двійковий або логарифмічний пошук")
     print(f"text: 'art1', pattern: '{bmoor.pattern}', index: {bmoor.search(art1)}")
 
-    bmoor = BoyerMoore(art1)
-    print(f"text: 'art1', pattern: 'art1', index: {bmoor.search(art1)}")
+    # bmoor = BoyerMoore(art1)
+    # print(f"text: 'art1', pattern: 'art1', index: {bmoor.search(art1)}")
     
-    bmoor = BoyerMoore(art1[5:])
-    print(f"text: 'art1', pattern: 'art1', index: {bmoor.search(art1)}")
+    # bmoor = BoyerMoore(art1[5:])
+    # print(f"text: 'art1', pattern: 'art1', index: {bmoor.search(art1)}")
     
 
+    kmp = KnuthMorrisPratt("abc")
+    print(f"text: '{text1}', pattern: '{kmp.pattern}', index: {kmp.search(text1)}")
+    print(f"text: '{text2}', pattern: '{kmp.pattern}', index: {kmp.search(text2)}")
+    print(f"text: '{text3}', pattern: '{kmp.pattern}', index: {kmp.search(text3)}")
+    print(f"text: '{text4}', pattern: '{kmp.pattern}', index: {kmp.search(text4)}")
+    print(f"text: '{text5}', pattern: '{kmp.pattern}', index: {kmp.search(text5)}")
 
+    kmp = KnuthMorrisPratt("вг")
+    print(f"text: '{text1}', pattern: '{kmp.pattern}', index: {kmp.search(text1)}")
+    print(f"text: '{text2}', pattern: '{kmp.pattern}', index: {kmp.search(text2)}")
+    print(f"text: '{text3}', pattern: '{kmp.pattern}', index: {kmp.search(text3)}")
+    print(f"text: '{text4}', pattern: '{kmp.pattern}', index: {kmp.search(text4)}")
+    print(f"text: '{text5}', pattern: '{kmp.pattern}', index: {kmp.search(text5)}")
+    print(f"text: 'art1', pattern: '{kmp.pattern}', index: {kmp.search(art1)}")
 
+    kmp = KnuthMorrisPratt("")
+    print(f"text: '{text1}', pattern: '{kmp.pattern}', index: {kmp.search(text1)}")
+    print(f"text: '{text4}', pattern: '{kmp.pattern}', index: {kmp.search(text4)}")
+
+    kmp = KnuthMorrisPratt("Двійковий або логарифмічний пошук")
+    print(f"text: 'art1', pattern: '{kmp.pattern}', index: {kmp.search(art1)}")
+
+    kmp = KnuthMorrisPratt(art1)
+    print(f"text: 'art1', pattern: 'art1', index: {kmp.search(art1)}")
+    
+    kmp = KnuthMorrisPratt(art1[5:])
+    print(f"text: 'art1', pattern: 'art1', index: {kmp.search(art1)}")
+    
 
     
     # print(insertion_sort_my([random.randint(min_value, max_value) for _ in range(10)]))
