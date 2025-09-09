@@ -16,18 +16,18 @@ class BoyerMoore():
 
         self.pattern: str = pattern
         self.bad_char_skip: dict[str, int] = {pattern[i]: last - i for i in range(last)}
-        self.good_suffix_skip = [0]*len(pattern) # make([]int, len(pattern))
+        self.good_suffix_skip = [0]*len(pattern) 
 
         # First pass: set each value to the next index which starts a prefix of pattern.
         last_prefix = last
-        for i in range(last, -1, -1): # for i = last; i >= 0; i-- {
+        for i in range(last, -1, -1):
             if pattern.startswith(pattern[i + 1:]): 
                 last_prefix = i + 1
             # lastPrefix is the shift, and (last-i) is len(suffix).
             self.good_suffix_skip[i] = last_prefix + last - i
 
         # Second pass: find repeats of pattern's suffix starting from the front.
-        for i in range(last): # i := 0; i < last; i++ {
+        for i in range(last): 
             len_suffix = longest_common_suffix(pattern, pattern[1:i + 1])
             if pattern[i - len_suffix] != pattern[last - len_suffix]:
             # (last-i) is the shift, and lenSuffix is len(suffix).
@@ -91,7 +91,53 @@ class KnuthMorrisPratt():
                 i += 1
             if j == m:
                 return i - j
-        return -1       
+        return -1 
+    
+def polynomial_hash(s: str, base: int, modulus: int):
+    n = len(s)
+    hash_value = 0
+    for i, char in enumerate(s):
+        power_of_base = pow(base, n - i - 1) % modulus
+        hash_value = (hash_value + ord(char) * power_of_base) % modulus
+    return hash_value
+
+class RabinKarp():
+    def __init__(self, pattern: str, base: int = 256, modulus: int = 101) -> None:
+        self.pattern: str = pattern
+        self.pattern_len = len(pattern)
+        self.pattern_hash = polynomial_hash(pattern, base, modulus)
+        self.base = base 
+        self.modulus = modulus
+
+    def search(self, text: str) -> int:
+        text_len = len(text)
+
+        if self.pattern_len == 0:
+            return 0
+
+        if self.pattern_len > text_len:
+            return -1
+
+        current_slice_hash = polynomial_hash(text[:self.pattern_len], self.base, self.modulus)
+        h_multiplier = pow(self.base, self.pattern_len - 1) % self.modulus
+        for i in range(text_len - self.pattern_len + 1):
+            # print(f"pattern hash : {self.pattern_hash}, current hash: {current_slice_hash}")
+            if self.pattern_hash == current_slice_hash:
+                #print('hash equals')
+                if text[i:i+self.pattern_len] == self.pattern:
+                    #print("strings equals")
+                    return i
+
+            if i < text_len - self.pattern_len:
+                #current_slice_hash = polynomial_hash(text[:text_len], self.base, self.modulus)
+                current_slice_hash = (current_slice_hash - 
+                                      ord(text[i]) * h_multiplier) % self.modulus
+                current_slice_hash = (current_slice_hash * self.base + 
+                                      ord(text[i + self.pattern_len])) % self.modulus
+                if current_slice_hash < 0:
+                    current_slice_hash += self.modulus   
+
+        return -1
 
         
 
@@ -111,6 +157,9 @@ def main():
 
     with open("data/стаття_1.txt", "r") as f:
         art1 = f.read()
+
+    with open("data/стаття_2.txt", "r") as f:
+        art2 = f.read()
 
 
 
@@ -170,8 +219,35 @@ def main():
     
     kmp = KnuthMorrisPratt(art1[5:])
     print(f"text: 'art1', pattern: 'art1', index: {kmp.search(art1)}")
-    
 
+
+    rk = RabinKarp('abc')
+    print(f"text: '{text1}', pattern: '{rk.pattern}', index: {rk.search(text1)}")
+    print(f"text: '{text2}', pattern: '{rk.pattern}', index: {rk.search(text2)}")
+    print(f"text: '{text3}', pattern: '{rk.pattern}', index: {rk.search(text3)}")
+    print(f"text: '{text4}', pattern: '{rk.pattern}', index: {rk.search(text4)}")
+    print(f"text: '{text5}', pattern: '{rk.pattern}', index: {rk.search(text5)}")
+
+    rk = RabinKarp("вг")
+    print(f"text: '{text1}', pattern: '{rk.pattern}', index: {rk.search(text1)}")
+    print(f"text: '{text2}', pattern: '{rk.pattern}', index: {rk.search(text2)}")
+    print(f"text: '{text3}', pattern: '{rk.pattern}', index: {rk.search(text3)}")
+    print(f"text: '{text4}', pattern: '{rk.pattern}', index: {rk.search(text4)}")
+    print(f"text: '{text5}', pattern: '{rk.pattern}', index: {rk.search(text5)}")
+    print(f"text: 'art1', pattern: '{rk.pattern}', index: {rk.search(art1)}")
+
+    rk = KnuthMorrisPratt("")
+    print(f"text: '{text1}', pattern: '{rk.pattern}', index: {rk.search(text1)}")
+    print(f"text: '{text4}', pattern: '{rk.pattern}', index: {rk.search(text4)}")
+
+    rk = KnuthMorrisPratt("Двійковий або логарифмічний пошук")
+    print(f"text: 'art1', pattern: '{rk.pattern}', index: {rk.search(art1)}")
+
+    rk = KnuthMorrisPratt(art1)
+    print(f"text: 'art1', pattern: 'art1', index: {rk.search(art1)}")
+    
+    rk = KnuthMorrisPratt(art1[5:])
+    print(f"text: 'art1', pattern: 'art1', index: {rk.search(art1)}")
     
     # print(insertion_sort_my([random.randint(min_value, max_value) for _ in range(10)]))
     # print(insertion_sort_old([random.randint(min_value, max_value) for _ in range(10)]))
